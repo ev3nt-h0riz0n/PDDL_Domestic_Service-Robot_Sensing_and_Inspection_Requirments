@@ -156,9 +156,3 @@
         )
     )
 )
-
-;can i assume one single meal
-;can i change the domain of pddl to pddl+
-;is it complex enough as it is
-;partial knowladge - is inspected enought to be considered partial knowladge
-;

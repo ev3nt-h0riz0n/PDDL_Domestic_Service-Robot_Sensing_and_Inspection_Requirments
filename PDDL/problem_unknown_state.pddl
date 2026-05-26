@@ -17,12 +17,11 @@
 
         (robot-at walleye counter)
         (hand-empty walleye)
-        (not (fridge-open))
 
         (ingredient-at banana fridge)
         (ingredient-at milk fridge)
         (ingredient-at strawberry fridge)
-        (not (is-fresh strawberry))
+        
         (is-fresh banana)
         (is-fresh milk)
     )
