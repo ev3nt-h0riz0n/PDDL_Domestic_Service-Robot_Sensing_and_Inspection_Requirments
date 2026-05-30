@@ -79,7 +79,7 @@
         )
         :effect (and
             (at start (not (hand-empty ?r)))
-            (at end (holding ?r ?i))
+            (at start (holding ?r ?i))
             (at start (not (ingredient-at ?i ?l)))
         )
     )
@@ -173,6 +173,7 @@
             (at end (ingredient-at ?i ?l))
         )
     )
+
     (:durative-action pick-from-counter
         :parameters (?r - robot ?i - ingredient ?l - location)
         :duration (= ?duration 1)
@@ -188,4 +189,32 @@
             (at start (not (hand-empty ?r)))
         )
     )
+    (:process fridge-warming
+        :parameters ()
+        :precondition (fridge-open)
+        :effect (and
+            (increase (temperature fridge) (* #t (* 0.1 (- 22.0 (temperature fridge)))))
+        )
+    )
+    (:process fridge-cooling
+        :parameters ()
+        :precondition (and
+            (not (fridge-open))
+            (> (temperature fridge) 4.0)
+        )
+        :effect (and
+            (decrease (temperature fridge) (* #t (* 0.04 (- (temperature fridge) 4.0)))))
+    )
+
+    (:process spoilage-at-location
+        :parameters (?i - ingredient ?l - location)
+        :precondition (and
+            (ingredient-at ?i ?l)
+            (not (in-bowl ?i))
+        )
+        :effect (and
+            (increase (spoilage-level ?i) (* #t ()))    ;; TO COMPLETE
+        )
+    )
+
 )
