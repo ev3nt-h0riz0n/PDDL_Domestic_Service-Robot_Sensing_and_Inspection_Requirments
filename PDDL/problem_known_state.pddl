@@ -2,7 +2,7 @@
     (:domain robot-sensing-inspecting)
 
     (:objects
-        walleye - robot
+        WallE - robot
         fridge counter trash - location
         banana - fruit
         milk - liquid
@@ -15,8 +15,8 @@
         (counter-zone counter)
         (trash-zone trash)
 
-        (robot-at walleye counter)
-        (hand-empty walleye)
+        (robot-at WallE counter)
+        (hand-empty WallE)
 
         (ingredient-at banana fridge)
         (ingredient-at milk fridge)

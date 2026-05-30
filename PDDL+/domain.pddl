@@ -9,11 +9,6 @@
         fruit liquid - ingredient
     )
     
-    (:functions
-        (temperature ?l - location)
-        (spoilage-level ?i - ingredient)
-    )
-    
     (:predicates
         (robot-at ?r - robot ?l - location)
         (ingredient-at ?i - ingredient ?l - location)
@@ -27,6 +22,11 @@
         (is-fresh ?i - ingredient)
         (inspected ?i - ingredient)
         (smoothie-prepared ?m - meal)
+    )
+
+    (:functions
+        (temperature ?l - location)
+        (spoilage-level ?i - ingredient)
     )
     
     (:durative-action move
@@ -132,11 +132,11 @@
             (over all (robot-at ?r ?l))
             (over all (trash-zone ?l))
             (at start (inspected ?i))
-            (over all (not (is-fresh ?i)))
+            (at end (not (is-fresh ?i)))
             (at start (holding ?r ?i))
         )
         :effect (and
-            (at start (not (holding ?r ?i)))
+            (at end (not (holding ?r ?i)))
             (at end (hand-empty ?r))
             (at end (ingredient-at ?i ?l))
         )
@@ -185,7 +185,7 @@
         )
         :effect (and 
             (at start (not (ingredient-at ?i ?l)))
-            (at end (holding ?r ?i))
+            (at start (holding ?r ?i))
             (at start (not (hand-empty ?r)))
         )
     )
@@ -193,7 +193,7 @@
         :parameters ()
         :precondition (fridge-open)
         :effect (and
-            (increase (temperature fridge) (* #t (* 0.1 (- 22.0 (temperature fridge)))))
+            (increase (temperature fridge) (* #t (* 0.1 (- (temperature counter) (temperature fridge))))) ;; t(0.1 * (22.0 - temperature)
         )
     )
     (:process fridge-cooling
@@ -203,7 +203,7 @@
             (> (temperature fridge) 4.0)
         )
         :effect (and
-            (decrease (temperature fridge) (* #t (* 0.04 (- (temperature fridge) 4.0)))))
+            (decrease (temperature fridge) (* #t (* 0.04 (- (temperature fridge) 4.0))))) ;; t(0.04 * (temperature - 4.0)
     )
 
     (:process spoilage-at-location
@@ -213,8 +213,29 @@
             (not (in-bowl ?i))
         )
         :effect (and
-            (increase (spoilage-level ?i) (* #t ()))    ;; TO COMPLETE
+            (increase (spoilage-level ?i) (* #t (* 0.008 (* (+ (temperature ?l) 1.0) (+ (temperature ?l) 1.0))))) ;; t(0.008 * (temperature +1)^2)
         )
     )
 
+    (:process spoilage-in-hand
+        :parameters (?r - robot ?i - ingredient)
+        :precondition (and
+            (holding ?r ?i)
+            (not (in-bowl ?i))
+        )
+        :effect (and
+            (increase (spoilage-level ?i) (* #t (* 0.008 (* (+ (temperature counter) 1.0) (+ (temperature counter) 1.0))))) 
+        )
+    )
+
+    (:event food-spoils
+        :parameters (?i - ingredient)
+        :precondition (and
+            (is-fresh ?i)
+            (>= (spoilage-level ?i) 100.0)    
+        )
+        :effect (and
+            (not (is-fresh ?i))
+        )
+    )
 )

@@ -51,60 +51,60 @@ To analyze how the robot handles initial knowledge, sensing constraints, and fai
 
 ### Known state problem output
 
-(move walleye counter fridge) </br>
-(open-fridge walleye fridge) </br>
-(take-ingredient walleye milk fridge) </br>
-(move walleye fridge counter) </br>
-(put-in-bowl walleye milk counter)</br>
-(move walleye counter fridge)</br>
-(take-ingredient walleye banana fridge)</br>
-(move walleye fridge counter)</br>
-(put-in-bowl walleye banana counter)</br>
-(move walleye counter fridge)</br>
-(close-fridge walleye fridge)</br>
-(move walleye fridge counter)</br>
-(blend-smoothie walleye counter banana_smoothie banana milk)</br>
+(move WallE counter fridge) </br>
+(open-fridge WallE fridge) </br>
+(take-ingredient WallE milk fridge) </br>
+(move WallE fridge counter) </br>
+(put-in-bowl WallE milk counter)</br>
+(move WallE counter fridge)</br>
+(take-ingredient WallE banana fridge)</br>
+(move WallE fridge counter)</br>
+(put-in-bowl WallE banana counter)</br>
+(move WallE counter fridge)</br>
+(close-fridge WallE fridge)</br>
+(move WallE fridge counter)</br>
+(blend-smoothie WallE counter banana_smoothie banana milk)</br>
 
 ### Unknown state problem output - inspecting rotten food not forced
 
-(move walleye counter fridge)</br>
-(open-fridge walleye fridge)</br>
-(take-ingredient walleye milk fridge)</br>
-(smell-spoil walleye milk)</br>
-(move walleye fridge counter)</br>
-(put-in-bowl walleye milk counter)</br>
-(move walleye counter fridge)</br>
-(take-ingredient walleye banana fridge)</br>
-(scan-mold walleye banana)</br>
-(move walleye fridge counter)</br>
-(put-in-bowl walleye banana counter)</br>
-(move walleye counter fridge)</br>
-(close-fridge walleye fridge)</br>
-(move walleye fridge counter)</br>
-(blend-smoothie walleye counter fruit_smoothie banana milk)</br>
+(move WallE counter fridge)</br>
+(open-fridge WallE fridge)</br>
+(take-ingredient WallE milk fridge)</br>
+(smell-spoil WallE milk)</br>
+(move WallE fridge counter)</br>
+(put-in-bowl WallE milk counter)</br>
+(move WallE counter fridge)</br>
+(take-ingredient WallE banana fridge)</br>
+(scan-mold WallE banana)</br>
+(move WallE fridge counter)</br>
+(put-in-bowl WallE banana counter)</br>
+(move WallE counter fridge)</br>
+(close-fridge WallE fridge)</br>
+(move WallE fridge counter)</br>
+(blend-smoothie WallE counter fruit_smoothie banana milk)</br>
 
 ### Unknown state problem output - inspecting rotten food forced
 
-(move walleye counter fridge)</br>
-(open-fridge walleye fridge)</br>
-(take-ingredient walleye strawberry fridge)</br>
-(move walleye fridge trash)</br>
-(scan-mold walleye strawberry)</br>
-(throw-away walleye trash strawberry)</br>
-(move walleye trash fridge)</br>
-(take-ingredient walleye milk fridge)</br>
-(smell-spoil walleye milk)</br>
-(move walleye fridge counter)</br>
-(put-in-bowl walleye milk counter)</br>
-(move walleye counter fridge)</br>
-(take-ingredient walleye banana fridge)</br>
-(scan-mold walleye banana)</br>
-(move walleye fridge counter)</br>
-(put-in-bowl walleye banana counter)</br>
-(move walleye counter fridge)</br>
-(close-fridge walleye fridge)</br>
-(move walleye fridge counter)</br>
-(blend-smoothie walleye counter fruit_smoothie banana milk)</br>
+(move WallE counter fridge)</br>
+(open-fridge WallE fridge)</br>
+(take-ingredient WallE strawberry fridge)</br>
+(move WallE fridge trash)</br>
+(scan-mold WallE strawberry)</br>
+(throw-away WallE trash strawberry)</br>
+(move WallE trash fridge)</br>
+(take-ingredient WallE milk fridge)</br>
+(smell-spoil WallE milk)</br>
+(move WallE fridge counter)</br>
+(put-in-bowl WallE milk counter)</br>
+(move WallE counter fridge)</br>
+(take-ingredient WallE banana fridge)</br>
+(scan-mold WallE banana)</br>
+(move WallE fridge counter)</br>
+(put-in-bowl WallE banana counter)</br>
+(move WallE counter fridge)</br>
+(close-fridge WallE fridge)</br>
+(move WallE fridge counter)</br>
+(blend-smoothie WallE counter fruit_smoothie banana milk)</br>
 
 
 ## Discussion
