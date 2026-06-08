@@ -529,7 +529,9 @@
             (is-fresh ?i)
             (> (spoilage-level ?i) 10.0)
         )
-        :effect
-        (not (is-fresh ?i))
+        :effect(and
+            (not (is-fresh ?i))
+            (not (inspected ?i))
+        )
     )
 )
