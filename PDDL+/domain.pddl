@@ -1,11 +1,11 @@
-(define (domain robot-sensing-inspecting)
-    (:requirements :strips :typing :negative-preconditions :action-costs :time :durative-actions :fluents)
+(define (domain robot-sensing-optimized)
+    (:requirements :strips :typing :negative-preconditions :fluents :continuous-effects :time)
     
-    (:types
-        location
-        robot
-        meal
-        ingredient
+    (:types 
+        robot 
+        location 
+        meal 
+        ingredient - object
         fruit liquid - ingredient
     )
     
@@ -18,224 +18,500 @@
         (fridge-zone ?l - location)
         (counter-zone ?l - location)
         (trash-zone ?l - location)
+        (table-zone ?l - location)
         (in-bowl ?i - ingredient)
         (is-fresh ?i - ingredient)
         (inspected ?i - ingredient)
         (smoothie-prepared ?m - meal)
+
+        ;; Flags for processes
+        (moving-now ?r - robot ?l - location)
+        (opening-fridge-now ?r - robot)
+        (closing-fridge-now ?r - robot)
+        (taking-now ?r - robot ?i - ingredient)
+        (putting-down-now ?r - robot)
+        (scanning-now ?r - robot ?i - ingredient)
+        (smelling-now ?r - robot ?i - ingredient)
+        (putting-in-bowl-now ?r - robot ?i - ingredient)
+        (throwing-away-now ?r - robot ?i - ingredient)
+        (blending-now ?r - robot ?m - meal)
+        (busy ?r - robot)
     )
 
     (:functions
         (temperature ?l - location)
         (spoilage-level ?i - ingredient)
+        (action-timer ?r - robot)
+        (total-cost)
     )
-    
-    (:durative-action move
+
+    ;; ================= MOVING ===================
+    (:action move
         :parameters (?r - robot ?from ?to - location)
-        :duration (= ?duration 5)
-        :condition (at start (robot-at ?r ?from))
-        :effect (and
-            (at start (not (robot-at ?r ?from)))
-            (at end (robot-at ?r ?to))
-        )    
+        :precondition
+        (and
+            (robot-at ?r ?from)
+            (not (busy ?r))
+        )
+        :effect
+        (and
+            (busy ?r)
+            (moving-now ?r ?to)
+            (not (robot-at ?r ?from))
+            (assign (action-timer ?r) 0.0)
+        )
     )
 
-    (:durative-action open-fridge
+    (:process move-process
         :parameters (?r - robot ?l - location)
-        :duration (= ?duration 2)
-        :condition (and
-            (over all (robot-at ?r ?l))
-            (over all (fridge-zone ?l))
-            (at start (not (fridge-open)))
-            (at start (hand-empty ?r))
+        :precondition
+        (moving-now ?r ?l)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-move
+        :parameters (?r - robot ?to - location)
+        :precondition
+        (and
+            (moving-now ?r ?to)
+            (>= (action-timer ?r) 5.0)
         )
-        :effect (and
-            (at end (fridge-open))
+        :effect
+        (and
+            (not (busy ?r))
+            (not (moving-now ?r ?to))
+            (robot-at ?r ?to)
+            (increase (total-cost) 5)
+            (assign (action-timer ?r) 0.0)
         )
     )
 
-    (:durative-action close-fridge
+    ;; ================== OPENING FRIDGE ==================
+    (:action open-fridge
         :parameters (?r - robot ?l - location)
-        :duration (= ?duration 2)
-        :condition (and
-            (over all (robot-at ?r ?l))
-            (over all (fridge-zone ?l))
-            (at start (fridge-open))
-            (at start (hand-empty ?r))
-        )
-        :effect (and
-            (at end (not (fridge-open)))
-        )
-    )
-
-    (:durative-action take-ingredient
-        :parameters (?r - robot ?i - ingredient ?l - location)
-        :duration (= ?duration 1)
-        :condition (and
-            (over all (fridge-open))
-            (at start (ingredient-at ?i ?l))
-            (over all (robot-at ?r ?l))
-            (over all (fridge-zone ?l))
-            (at start (hand-empty ?r))
-        )
-        :effect (and
-            (at start (not (hand-empty ?r)))
-            (at start (holding ?r ?i))
-            (at start (not (ingredient-at ?i ?l)))
-        )
-    )
-
-    (:durative-action scan-mold
-        :parameters (?r - robot ?f - fruit)
-        :duration (= ?duration 3)
-        :condition (and
-            (at start (not (inspected ?f)))
-            (over all (holding ?r ?f))
-        )
-        :effect (and
-            (at end (inspected ?f))
-        )
-    )
-
-    (:durative-action smell-spoil
-        :parameters (?r - robot ?lq - liquid)
-        :duration (= ?duration 4)
-        :condition (and
-            (over all (holding ?r ?lq))
-            (at start (not (inspected ?lq)))
-        )
-        :effect (and
-            (at end (inspected ?lq))
-        )
-    )
-
-    (:durative-action put-in-bowl
-        :parameters (?r - robot ?i - ingredient ?l - location)
-        :duration (= ?duration 1)
-        :condition (and
-            (at start (inspected ?i))
-            (over all (is-fresh ?i))
-            (over all (counter-zone ?l))
-            (over all (robot-at ?r ?l))
-            (at start (holding ?r ?i))
-        )
-        :effect (and
-            (at end (in-bowl ?i))
-            (at end (not (holding ?r ?i)))
-            (at end (hand-empty ?r))
-        )
-    )
-
-    (:durative-action throw-away
-        :parameters (?r - robot ?l - location ?i - ingredient)
-        :duration (= ?duration 1)
-        :condition (and
-            (over all (robot-at ?r ?l))
-            (over all (trash-zone ?l))
-            (at start (inspected ?i))
-            (at end (not (is-fresh ?i)))
-            (at start (holding ?r ?i))
-        )
-        :effect (and
-            (at end (not (holding ?r ?i)))
-            (at end (hand-empty ?r))
-            (at end (ingredient-at ?i ?l))
-        )
-    )
-
-    (:durative-action blend-smoothie
-        :parameters (?r - robot ?l - location ?m - meal ?f - fruit ?lq - liquid)
-        :duration (= ?duration 20)
-        :condition (and
-            (over all (robot-at ?r ?l)) 
-            (over all (counter-zone ?l)) 
-            (over all (not (fridge-open)))
-            (over all (in-bowl ?f))
-            (over all (in-bowl ?lq))
-        )
-        :effect (and
-            (at end (smoothie-prepared ?m))
-            (at end (not (in-bowl ?f)))
-            (at end (not (in-bowl ?lq)))
-        )
-    )
-
-    (:durative-action put-on-counter
-        :parameters  (?r - robot ?i - ingredient ?l - location)
-        :duration (= ?duration 1)
-        :condition (and 
-            (over all (robot-at ?r ?l))
-            (over all (counter-zone ?l))
-            (at start (holding ?r ?i))
-        )
-        :effect (and
-            (at end (not (holding ?r ?i)))
-            (at end (hand-empty ?r))
-            (at end (ingredient-at ?i ?l))
-        )
-    )
-
-    (:durative-action pick-from-counter
-        :parameters (?r - robot ?i - ingredient ?l - location)
-        :duration (= ?duration 1)
-        :condition (and
-            (over all (robot-at ?r ?l))
-            (over all (counter-zone ?l))
-            (at start (ingredient-at ?i ?l))
-            (at start (hand-empty ?r))
-        )
-        :effect (and 
-            (at start (not (ingredient-at ?i ?l)))
-            (at start (holding ?r ?i))
-            (at start (not (hand-empty ?r)))
-        )
-    )
-    (:process fridge-warming
-        :parameters ()
-        :precondition (fridge-open)
-        :effect (and
-            (increase (temperature fridge) (* #t (* 0.1 (- (temperature counter) (temperature fridge))))) ;; t(0.1 * (22.0 - temperature)
-        )
-    )
-    (:process fridge-cooling
-        :parameters ()
-        :precondition (and
+        :precondition
+        (and
+            (robot-at ?r ?l)
+            (fridge-zone ?l)
             (not (fridge-open))
-            (> (temperature fridge) 4.0)
+            (hand-empty ?r)
+            (not (busy ?r))
         )
-        :effect (and
-            (decrease (temperature fridge) (* #t (* 0.04 (- (temperature fridge) 4.0))))) ;; t(0.04 * (temperature - 4.0)
+        :effect
+        (and
+            (busy ?r)
+            (opening-fridge-now ?r)
+            (assign (action-timer ?r) 0.0)
+        )
     )
 
-    (:process spoilage-at-location
-        :parameters (?i - ingredient ?l - location)
-        :precondition (and
+    (:process open-fridge-process
+        :parameters (?r - robot)
+        :precondition
+        (opening-fridge-now ?r)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-open-fridge
+        :parameters (?r - robot)
+        :precondition
+        (and
+            (opening-fridge-now ?r)
+            (>= (action-timer ?r) 2.0)
+        )
+        :effect
+        (and
+            (not (busy ?r))
+            (not (opening-fridge-now ?r))
+            (fridge-open)
+            (increase (total-cost) 2)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    ;; ================= CLOSING FRIDGE =================
+    (:action close-fridge
+        :parameters (?r - robot ?l - location)
+        :precondition
+        (and
+            (robot-at ?r ?l)
+            (fridge-zone ?l)
+            (fridge-open)
+            (hand-empty ?r)
+            (not (busy ?r))
+        )
+        :effect
+        (and
+            (busy ?r)
+            (closing-fridge-now ?r)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    (:process closing-fridge-process
+        :parameters (?r - robot)
+        :precondition
+        (closing-fridge-now ?r)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-close-fridge
+        :parameters (?r - robot)
+        :precondition
+        (and
+            (closing-fridge-now ?r)
+            (>= (action-timer ?r) 2.0)
+        )
+        :effect
+        (and
+            (not (busy ?r))
+            (not (closing-fridge-now ?r))
+            (not (fridge-open))
+            (increase (total-cost) 2)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    ;; ======================= TAKING ========================
+    (:action take
+        :parameters (?r - robot ?i - ingredient ?l - location)
+        :precondition
+        (and
+            (fridge-open)
             (ingredient-at ?i ?l)
-            (not (in-bowl ?i))
+            (robot-at ?r ?l)
+            (fridge-zone ?l)
+            (hand-empty ?r)
+            (not (busy ?r))
         )
-        :effect (and
-            (increase (spoilage-level ?i) (* #t (* 0.008 (* (+ (temperature ?l) 1.0) (+ (temperature ?l) 1.0))))) ;; t(0.008 * (temperature +1)^2)
+        :effect
+        (and
+            (busy ?r)
+            (taking-now ?r ?i)
+            (not (ingredient-at ?i ?l))
+            (not (hand-empty ?r))
+            (assign (action-timer ?r) 0.0)
         )
     )
 
-    (:process spoilage-in-hand
+    (:process take-process
         :parameters (?r - robot ?i - ingredient)
-        :precondition (and
+        :precondition
+        (taking-now ?r ?i)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-take
+        :parameters (?r - robot ?i - ingredient)
+        :precondition
+        (and
+            (taking-now ?r ?i)
+            (>= (action-timer ?r) 1.0)
+        )
+        :effect
+        (and
+            (not (busy ?r))
+            (not (taking-now ?r ?i))
             (holding ?r ?i)
+            (increase (total-cost) 1)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    ;; =========================== PUTTING DOWN ========================
+    (:action put-down
+        :parameters (?r - robot ?i - ingredient ?l - location)
+        :precondition
+        (and
+            (robot-at ?r ?l)
+            (table-zone ?l)
+            (holding ?r ?i)
+            (not (busy ?r))
+        )
+        :effect
+        (and
+            (busy ?r)
+            (putting-down-now ?r)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    (:process putting-down-process
+        :parameters (?r - robot)
+        :precondition
+        (putting-down-now ?r)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-put-down
+        :parameters (?r - robot ?i - ingredient ?l - location)
+        :precondition
+        (and
+            (putting-down-now ?r)
+            (>= (action-timer ?r) 1.0)
+        )
+        :effect
+        (and
+            (not (busy ?r))
+            (not (putting-down-now ?r))
+            (not (holding ?r ?i))
+            (hand-empty ?r)
+            (ingredient-at ?i ?l)
+            (increase (total-cost) 1)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    ;; ========================= INSPECTION ===========================
+    ;; Scan mold
+    (:action scan-mold
+        :parameters (?r - robot ?f - fruit)
+        :precondition
+        (and
+            (holding ?r ?f)
+            (not (inspected ?f))
+            (not (busy ?r))
+        )
+        :effect
+        (and
+            (busy ?r)
+            (scanning-now ?r ?f)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    (:process scan-process
+        :parameters (?r - robot ?f - fruit)
+        :precondition
+        (scanning-now ?r ?f)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-scan-mold
+        :parameters (?r - robot ?f - fruit)
+        :precondition
+        (and
+            (scanning-now ?r ?f)
+            (>= (action-timer ?r) 3.0)
+        )
+        :effect
+        (and
+            (not (busy ?r))
+            (not (scanning-now ?r ?f))
+            (inspected ?f)
+            (increase (total-cost) 3)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    ;; smell spoil
+    (:action smell-spoil
+        :parameters (?r - robot ?lq - liquid)
+        :precondition
+        (and
+            (holding ?r ?lq)
+            (not (inspected ?lq))
+            (not (busy ?r))
+        )
+        :effect
+        (and
+            (busy ?r)
+            (smelling-now ?r ?lq)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    (:process smell-process
+        :parameters (?r - robot ?lq - liquid)
+        :precondition
+        (smelling-now ?r ?lq)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-smell-spoil
+        :parameters (?r - robot ?lq - liquid)
+        :precondition
+        (and
+            (smelling-now ?r ?lq)
+            (>= (action-timer ?r) 4.0)
+        )
+        :effect
+        (and
+            (not (busy ?r))
+            (not (smelling-now ?r ?lq))
+            (inspected ?lq)
+            (increase (total-cost) 4)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    ;; ================== PUTTING INTO A BOWL ==================
+    (:action put-in-bowl
+        :parameters (?r - robot ?i - ingredient ?l - location)
+        :precondition
+        (and
+            (inspected ?i)
+            (is-fresh ?i)
+            (counter-zone ?l)
+            (robot-at ?r ?l)
+            (holding ?r ?i)
+            (not (busy ?r))
+        )
+        :effect
+        (and
+            (busy ?r)
+            (putting-in-bowl-now ?r ?i)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    (:process bowl-process
+        :parameters (?r - robot ?i - ingredient)
+        :precondition
+        (putting-in-bowl-now ?r ?i)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-put-in-bowl
+        :parameters (?r - robot ?i - ingredient)
+        :precondition
+        (and
+            (putting-in-bowl-now ?r ?i)
+            (>= (action-timer ?r) 1.0)
+        )
+        :effect
+        (and
+            (not (busy ?r))
+            (not (putting-in-bowl-now ?r ?i))
+            (not (holding ?r ?i))
+            (hand-empty ?r)
+            (in-bowl ?i)
+            (increase (total-cost) 1)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    ;; ==================== THROWING AWAY ======================
+    (:action throw-away
+        :parameters (?r - robot ?l - location ?i - ingredient)
+        :precondition
+        (and
+            (robot-at ?r ?l)
+            (trash-zone ?l)
+            (inspected ?i)
+            (not (is-fresh ?i))
+            (holding ?r ?i)
+            (not (busy ?r))
+        )
+        :effect
+        (and
+            (busy ?r)
+            (throwing-away-now ?r ?i)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    (:process throwing-away-process
+        :parameters (?r - robot ?i - ingredient)
+        :precondition
+        (throwing-away-now ?r ?i)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-throw-away
+        :parameters (?r - robot ?l - location ?i - ingredient)
+        :precondition
+        (and
+            (throwing-away-now ?r ?i)
+            (>= (action-timer ?r) 1.0)
+        )
+        :effect
+        (and
+            (not (busy ?r))
+            (not (throwing-away-now ?r ?i))
+            (not (holding ?r ?i))
+            (hand-empty ?r)
+            (ingredient-at ?i ?l)
+            (increase (total-cost) 1)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    ;; ===================== BLENDING ===========================
+    (:action blend
+        :parameters (?r - robot ?l - location ?m - meal ?f - fruit ?lq - liquid)
+        :precondition
+        (and
+            (robot-at ?r ?l)
+            (counter-zone ?l)
+            (not (fridge-open))
+            (in-bowl ?f)
+            (in-bowl ?lq)
+            (not (busy ?r))
+        )
+        :effect
+        (and
+            (busy ?r)
+            (blending-now ?r ?m)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    (:process blend-process
+        :parameters (?r - robot ?m - meal)
+        :precondition
+        (blending-now ?r ?m)
+        :effect
+        (increase (action-timer ?r) (* #t 1.0))
+    )
+
+    (:event end-blend
+        :parameters (?r - robot ?m - meal)
+        :precondition
+        (and
+            (blending-now ?r ?m)
+            (>= (action-timer ?r) 10.0)
+        )
+        :effect
+        (and
+            (not (busy ?r))
+            (not (blending-now ?r ?m))
+            (smoothie-prepared ?m)
+            (increase (total-cost) 10)
+            (assign (action-timer ?r) 0.0)
+        )
+    )
+
+    (:process spoilage
+        :parameters (?i - ingredient ?l - location)
+        :precondition
+        (and
+            (is-fresh ?i)
+            (ingredient-at ?i ?l)
+            (not (fridge-zone ?l))
             (not (in-bowl ?i))
         )
-        :effect (and
-            (increase (spoilage-level ?i) (* #t (* 0.008 (* (+ (temperature counter) 1.0) (+ (temperature counter) 1.0))))) 
-        )
+        :effect
+        (increase (spoilage-level ?i) (* #t 0.05))
     )
 
     (:event food-spoils
         :parameters (?i - ingredient)
-        :precondition (and
+        :precondition
+        (and
             (is-fresh ?i)
-            (>= (spoilage-level ?i) 100.0)    
+            (> (spoilage-level ?i) 10.0)
         )
-        :effect (and
-            (not (is-fresh ?i))
-        )
+        :effect
+        (not (is-fresh ?i))
     )
 )
