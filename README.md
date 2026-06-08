@@ -175,116 +175,116 @@ To analyze how the robot manages environmental dynamics, continuous degradation 
 
 ### Fully fresh ingredients problem output
 
-Found Plan:
-0: -----waiting---- [2.0]
-2.0: (move WallE counter fridge)
-2.0: -----waiting---- [7.0]
-7.0: (open-fridge WallE fridge)
-7.0: -----waiting---- [9.0]
-9.0: (take WallE milk fridge)
-9.0: -----waiting---- [10.0]
-10.0: (smell-spoil WallE milk)
-10.0: -----waiting---- [14.0]
-14.0: (move WallE fridge counter)
-14.0: -----waiting---- [19.0]
-19.0: (put-in-bowl WallE milk counter)
-19.0: -----waiting---- [20.0]
-20.0: (move WallE counter fridge)
-20.0: -----waiting---- [25.0]
-25.0: (take WallE apple fridge)
-25.0: -----waiting---- [26.0]
-26.0: (scan-mold WallE apple)
-26.0: -----waiting---- [29.0]
-29.0: (move WallE fridge counter)
-29.0: -----waiting---- [34.0]
-34.0: (put-in-bowl WallE apple counter)
-34.0: -----waiting---- [35.0]
-35.0: (move WallE counter fridge)
-35.0: -----waiting---- [40.0]
-40.0: (close-fridge WallE fridge)
-40.0: -----waiting---- [42.0]
-42.0: (move WallE fridge counter)
-42.0: -----waiting---- [47.0]
-47.0: (blend WallE counter apple-smoothie apple milk)
-47.0: -----waiting---- [57.0]
+Found Plan:</br>
+0: -----waiting---- [2.0] </br>
+2.0: (move WallE counter fridge)</br>
+2.0: -----waiting---- [7.0]</br>
+7.0: (open-fridge WallE fridge)</br>
+7.0: -----waiting---- [9.0]</br>
+9.0: (take WallE milk fridge)</br>
+9.0: -----waiting---- [10.0]</br>
+10.0: (smell-spoil WallE milk)</br>
+10.0: -----waiting---- [14.0]</br>
+14.0: (move WallE fridge counter)</br>
+14.0: -----waiting---- [19.0]</br>
+19.0: (put-in-bowl WallE milk counter)</br>
+19.0: -----waiting---- [20.0]</br>
+20.0: (move WallE counter fridge)</br>
+20.0: -----waiting---- [25.0]</br>
+25.0: (take WallE apple fridge)</br>
+25.0: -----waiting---- [26.0]</br>
+26.0: (scan-mold WallE apple)</br>
+26.0: -----waiting---- [29.0]</br>
+29.0: (move WallE fridge counter)</br>
+29.0: -----waiting---- [34.0]</br>
+34.0: (put-in-bowl WallE apple counter)</br>
+34.0: -----waiting---- [35.0]</br>
+35.0: (move WallE counter fridge)</br>
+35.0: -----waiting---- [40.0]</br>
+40.0: (close-fridge WallE fridge)</br>
+40.0: -----waiting---- [42.0]</br>
+42.0: (move WallE fridge counter)</br>
+42.0: -----waiting---- [47.0]</br>
+47.0: (blend WallE counter apple-smoothie apple milk)</br>
+47.0: -----waiting---- [57.0]</br>
 
 ### Partly fresh ingredients problem output
 
-Found Plan:
-0: (move WallE counter fridge)
-0: -----waiting---- [5.0]
-5.0: (open-fridge WallE fridge)
-5.0: -----waiting---- [7.0]
-7.0: (take WallE apple fridge)
-7.0: -----waiting---- [8.0]
-8.0: (scan-mold WallE apple)
-8.0: -----waiting---- [11.0]
-11.0: (move WallE fridge counter)
-11.0: -----waiting---- [16.0]
-16.0: (put-in-bowl WallE apple counter)
-16.0: -----waiting---- [17.0]
-17.0: (move WallE counter fridge)
-17.0: -----waiting---- [22.0]
-22.0: (take WallE milk fridge)
-22.0: -----waiting---- [23.0]
-23.0: (smell-spoil WallE milk)
-23.0: -----waiting---- [27.0]
-27.0: (move WallE fridge counter)
-27.0: -----waiting---- [32.0]
-32.0: (put-in-bowl WallE milk counter)
-32.0: -----waiting---- [33.0]
-33.0: (move WallE counter fridge)
-33.0: -----waiting---- [38.0]
-38.0: (close-fridge WallE fridge)
-38.0: -----waiting---- [40.0]
-40.0: (move WallE fridge counter)
-40.0: -----waiting---- [45.0]
-45.0: (blend WallE counter apple-smoothie apple milk)
-45.0: -----waiting---- [55.0]
+Found Plan:</br>
+0: (move WallE counter fridge)</br>
+0: -----waiting---- [5.0]</br>
+5.0: (open-fridge WallE fridge)</br>
+5.0: -----waiting---- [7.0]</br>
+7.0: (take WallE apple fridge)</br>
+7.0: -----waiting---- [8.0]</br>
+8.0: (scan-mold WallE apple)</br>
+8.0: -----waiting---- [11.0]</br>
+11.0: (move WallE fridge counter)</br>
+11.0: -----waiting---- [16.0]</br>
+16.0: (put-in-bowl WallE apple counter)</br>
+16.0: -----waiting---- [17.0]</br>
+17.0: (move WallE counter fridge)</br>
+17.0: -----waiting---- [22.0]</br>
+22.0: (take WallE milk fridge)</br>
+22.0: -----waiting---- [23.0]</br>
+23.0: (smell-spoil WallE milk)</br>
+23.0: -----waiting---- [27.0]</br>
+27.0: (move WallE fridge counter)</br>
+27.0: -----waiting---- [32.0]</br>
+32.0: (put-in-bowl WallE milk counter)</br>
+32.0: -----waiting---- [33.0]</br>
+33.0: (move WallE counter fridge)</br>
+33.0: -----waiting---- [38.0]</br>
+38.0: (close-fridge WallE fridge)</br>
+38.0: -----waiting---- [40.0]</br>
+40.0: (move WallE fridge counter)</br>
+40.0: -----waiting---- [45.0]</br>
+45.0: (blend WallE counter apple-smoothie apple milk)</br>
+45.0: -----waiting---- [55.0]</br>
 
 ### Almost rotten ingredient problem output
 
-Found Plan:
-0: (move WallE counter fridge)
-0: -----waiting---- [5.0]
-5.0: (open-fridge WallE fridge)
-5.0: -----waiting---- [7.0]
-7.0: (take WallE apple1 fridge)
-7.0: -----waiting---- [8.0]
-8.0: (scan-mold WallE apple1)
-8.0: -----waiting---- [11.0]
-11.0: (move WallE fridge counter)
-11.0: -----waiting---- [16.0]
-16.0: (put-in-bowl WallE apple1 counter)
-16.0: -----waiting---- [17.0]
-17.0: (move WallE counter fridge)
-17.0: -----waiting---- [22.0]
-22.0: (take WallE milk fridge)
-22.0: -----waiting---- [23.0]
-23.0: (smell-spoil WallE milk)
-23.0: -----waiting---- [27.0]
-27.0: (move WallE fridge counter)
-27.0: -----waiting---- [32.0]
-32.0: (put-in-bowl WallE milk counter)
-32.0: -----waiting---- [33.0]
-33.0: (move WallE counter fridge)
-33.0: -----waiting---- [38.0]
-38.0: (take WallE apple2 fridge)
-38.0: -----waiting---- [39.0]
-39.0: (scan-mold WallE apple2)
-39.0: -----waiting---- [42.0]
-42.0: (move WallE fridge trash)
-42.0: -----waiting---- [47.0]
-47.0: (throw-away WallE trash apple2)
-47.0: -----waiting---- [48.0]
-48.0: (move WallE trash fridge)
-48.0: -----waiting---- [53.0]
-53.0: (close-fridge WallE fridge)
-53.0: -----waiting---- [55.0]
-55.0: (move WallE fridge counter)
-55.0: -----waiting---- [60.0]
-60.0: (blend WallE counter apple-smoothie apple1 milk)
-60.0: -----waiting---- [70.0]
+Found Plan:</br>
+0: (move WallE counter fridge)</br>
+0: -----waiting---- [5.0]</br>
+5.0: (open-fridge WallE fridge)</br>
+5.0: -----waiting---- [7.0]</br>
+7.0: (take WallE apple1 fridge)</br>
+7.0: -----waiting---- [8.0]</br>
+8.0: (scan-mold WallE apple1)</br>
+8.0: -----waiting---- [11.0]</br>
+11.0: (move WallE fridge counter)</br>
+11.0: -----waiting---- [16.0]</br>
+16.0: (put-in-bowl WallE apple1 counter)</br>
+16.0: -----waiting---- [17.0]</br>
+17.0: (move WallE counter fridge)</br>
+17.0: -----waiting---- [22.0]</br>
+22.0: (take WallE milk fridge)</br>
+22.0: -----waiting---- [23.0]</br>
+23.0: (smell-spoil WallE milk)</br>
+23.0: -----waiting---- [27.0]</br>
+27.0: (move WallE fridge counter)</br>
+27.0: -----waiting---- [32.0]</br>
+32.0: (put-in-bowl WallE milk counter)</br>
+32.0: -----waiting---- [33.0]</br>
+33.0: (move WallE counter fridge)</br>
+33.0: -----waiting---- [38.0]</br>
+38.0: (take WallE apple2 fridge)</br>
+38.0: -----waiting---- [39.0]</br>
+39.0: (scan-mold WallE apple2)</br>
+39.0: -----waiting---- [42.0]</br>
+42.0: (move WallE fridge trash)</br>
+42.0: -----waiting---- [47.0]</br>
+47.0: (throw-away WallE trash apple2)</br>
+47.0: -----waiting---- [48.0]</br>
+48.0: (move WallE trash fridge)</br>
+48.0: -----waiting---- [53.0]</br>
+53.0: (close-fridge WallE fridge)</br>
+53.0: -----waiting---- [55.0]</br>
+55.0: (move WallE fridge counter)</br>
+55.0: -----waiting---- [60.0]</br>
+60.0: (blend WallE counter apple-smoothie apple1 milk)</br>
+60.0: -----waiting---- [70.0]</br>
 
 ## Discussion
 
