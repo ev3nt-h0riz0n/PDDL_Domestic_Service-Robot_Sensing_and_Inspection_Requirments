@@ -1,4 +1,4 @@
-(define (domain robot-sensing-optimized)
+(define (domain robot-sensing-inspecting)
     (:requirements :strips :typing :negative-preconditions :fluents :continuous-effects :time)
     
     (:types 
@@ -39,7 +39,6 @@
     )
 
     (:functions
-        (temperature ?l - location)
         (spoilage-level ?i - ingredient)
         (action-timer ?r - robot)
         (total-cost)
@@ -201,8 +200,10 @@
         :parameters (?r - robot ?i - ingredient)
         :precondition
         (taking-now ?r ?i)
-        :effect
-        (increase (action-timer ?r) (* #t 1.0))
+        :effect(and
+            (increase (action-timer ?r) (* #t 1.0))
+            (increase (total-cost) (* #t 2.0))
+        )
     )
 
     (:event end-take
@@ -384,6 +385,7 @@
         :parameters (?r - robot ?i - ingredient)
         :precondition
         (and
+            (is-fresh ?i)
             (putting-in-bowl-now ?r ?i)
             (>= (action-timer ?r) 1.0)
         )
@@ -491,17 +493,33 @@
         )
     )
 
-    (:process spoilage
-        :parameters (?i - ingredient ?l - location)
+    (:process spoilage_outside
+        :parameters (?i - ingredient)
         :precondition
         (and
             (is-fresh ?i)
-            (ingredient-at ?i ?l)
-            (not (fridge-zone ?l))
+            (not (exists (?loc - location) 
+                (and (ingredient-at ?i ?loc) (fridge-zone ?loc))
+            ))
             (not (in-bowl ?i))
         )
-        :effect
-        (increase (spoilage-level ?i) (* #t 0.05))
+        :effect(and
+            (increase (spoilage-level ?i) (* #t 0.5))
+            (increase (total-cost) (* #t 2))
+        )
+    )
+
+    (:process spoilage_fridge
+        :parameters (?i - ingredient ?l - location)
+        :precondition(and
+            (is-fresh ?i)
+            (ingredient-at ?i ?l)
+            (fridge-zone ?l)
+        )
+        :effect(and
+            (increase (spoilage-level ?i) (* #t 0.2))
+            (increase (total-cost) (* #t 20))
+        )
     )
 
     (:event food-spoils
