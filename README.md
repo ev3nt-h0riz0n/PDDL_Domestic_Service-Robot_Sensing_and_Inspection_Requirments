@@ -9,7 +9,7 @@ This project models kitchen area that contains three main zones:
 
 <img src="images/img.jpg" alt="Kitchen illustration">
 
-Autonomous one-hand robot was created to work as a kitchen assistant. His main objective is preparing a smoothie. To do so, it needs to find one fresh fruit and, one fresh milk and place it inside a blender bowl. The robot is equipped with vision system and eNose. He is capable of inspecting fruits to detect mold and sniff a milk to detect spoilage.
+Autonomous one-hand robot was created to work as a kitchen assistant. His main objective is preparing a smoothie. To do so, it needs to find one fresh fruit, one fresh liquid and place it inside a blender bowl. The robot is equipped with a vision system and an eNose. He is capable of inspecting fruits to detect mold and sniff a liquid to detect spoilage.
 
 # Q1 - PDDL
 
@@ -21,11 +21,11 @@ The domain logic for Q1 is implemented using Classical PDDL with action costs. I
 * `(ingredient-at ?i - ingredient ?l - location)` – Represents ingredient placement.
 * `(holding ?r - robot ?i - ingredient)` – Indicates which item is currently in robot's hand. 
 * `(hand-empty ?r - robot)` – Indicates whether robot's hand is occupied.
-* `(fridge-open)` – Controls the global state of the fridge door (logic for future PDDL+)
+* `(fridge-open)` – Controls the global state of the fridge door (logic for future PDDL+).
 * `(in-bowl ?i - ingredient)` – Identifies ingredients that have been successfully placed in the blender bowl.
 * `(inspected ?i - ingredient)` – Marks whether an ingredient has undergone an inspection.
 * `(is-fresh ?i - ingredient)` – Represents freshness status of an ingredient.
-* `(smoothie-prepared ?m - meal)` – The main objectiv state.
+* `(smoothie-prepared ?m - meal)` – The main objective state.
 * Spatial categorizers: `(fridge-zone ?l)`, `(counter-zone ?l)`, `(trash-zone ?l)` used to strictly map abstract actions to geometric realities.
 
 ### Numeric function
@@ -128,6 +128,8 @@ While the Q1 model successfully forces a safe sequence of actions, the experimen
 For these reasons it seems convinient to switch from classical PDDL to PDDL+ to introduce continuous processes and instantaneous event. It will allow to implement real environment dynamics.
 
 # Q2
+
+## Domain
 
 In contrast to the classical model (Q1), Q2 PDDL+ model introduces environmental dynamics, where the state of ingredients changes independently of the robot's actions. 
 The initial design intended to introduce fridge cooling and fridge warming processes to simulate temperature-dependent spoilage. However, due to the high computational complexity of differential equations, which exceeded planner's calculation capacity, the model was simplified to easy linear degradation process. Ingredients expire at constant brates based on whether they are stored in the fridge or are outside.
