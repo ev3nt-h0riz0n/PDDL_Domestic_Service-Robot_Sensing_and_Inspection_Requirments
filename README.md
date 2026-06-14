@@ -132,7 +132,7 @@ For these reasons it seems convinient to switch from classical PDDL to PDDL+ to 
 ## Domain
 
 In contrast to the classical model (Q1), Q2 PDDL+ model introduces environmental dynamics, where the state of ingredients changes independently of the robot's actions. 
-The initial design intended to introduce fridge cooling and fridge warming processes to simulate temperature-dependent spoilage. However, due to the high computational complexity of differential equations, which exceeded planner's calculation capacity, the model was simplified to easy linear degradation process. Ingredients expire at constant brates based on whether they are stored in the fridge or are outside.
+The initial design is intended to introduce fridge cooling and fridge warming processes to simulate temperature-dependent spoilage. However, due to the high computational complexity of differential equations, which exceeded planner's calculation capacity, the model was simplified to an easy linear degradation process. Ingredients expire at constant rates based on whether they are stored in the fridge or outside.
 
 ### Predicates
 In addition to the Q1 predicates, the PDDL+ model uses flags to manage processes.
