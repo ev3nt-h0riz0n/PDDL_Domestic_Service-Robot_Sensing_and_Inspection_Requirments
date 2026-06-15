@@ -125,7 +125,7 @@ While the Q1 model successfully forces a safe sequence of actions, the experimen
 2.  Deterministic Outcomes: Classical PDDL cannot model probabilistic sensing (e.g., a sensor with a 90% accuracy rate). The outcome of an inspection must be hardcoded and 100% predictable in the initial state.
 3.  Static World (No Continuous Time): In Plans 2 and 3, the robot opens the fridge at the beginning, leaves it open (`fridge-open`) while moving to the counter to pour milk, and closes it only at the very end. In classical PDDL, time does not pass continuously, so keeping the fridge open has no negative consequences. This is highly unrealistic for a domestic environment.
 
-For these reasons it seems convinient to switch from classical PDDL to PDDL+ to introduce continuous processes and instantaneous event. It will allow to implement real environment dynamics.
+For these reasons it seems convenient to switch from classical PDDL to PDDL+ to introduce continuous processes and instantaneous events. It will allow to implement real environment dynamics.
 
 # Q2
 
@@ -137,41 +137,41 @@ The initial design is intended to introduce fridge cooling and fridge warming pr
 ### Predicates
 In addition to the Q1 predicates, the PDDL+ model uses flags to manage processes.
 
-* `moving-now ?r - robot ?l - location`
-* `moving-now ?r - robot ?l - location`
-* `opening-fridge-now ?r - robot`
-* `closing-fridge-now ?r - robot`
-* `taking-now ?r - robot ?i - ingredient`
-* `putting-down-now ?r - robot`
-* `scanning-now ?r - robot ?i - ingredient`
-* `smelling-now ?r - robot ?i - ingredient`
-* `putting-in-bowl-now ?r - robot ?i - ingredient`
-* `throwing-away-now ?r - robot ?i - ingredient`
-* `blending-now ?r - robot ?m - meal`
-* `busy ?r - robot`
+* `(moving-now ?r - robot ?l - location)`
+* `(moving-now ?r - robot ?l - location)`
+* `(opening-fridge-now ?r - robot)`
+* `(closing-fridge-now ?r - robot)`
+* `(taking-now ?r - robot ?i - ingredient)`
+* `(putting-down-now ?r - robot)`
+* `(scanning-now ?r - robot ?i - ingredient)`
+* `(smelling-now ?r - robot ?i - ingredient)`
+* `(putting-in-bowl-now ?r - robot ?i - ingredient)`
+* `(throwing-away-now ?r - robot ?i - ingredient)`
+* `(blending-now ?r - robot ?m - meal)`
+* `(busy ?r - robot)`
 
 ### Handling durative-actions
-As ENHSP planner does not support durative-action, it was necessary to divide every task into three components: Action, Process and Event. Flags mentioned in previous subsection are used to signal to the robot whether certain processes are still working.
+As the ENHSP planner does not support durative-action, it was necessary to divide every task into three components: Action, Process and Event. Flags mentioned in previous subsection are used to signal to the robot whether certain processes are still working.
 
-* Action - initiates the process flag and resets a timer that calculates how long should this action take.
+* Action - initiates the process flag and resets a timer that calculates how long this action should take.
 * Process - increments the timer over time.
-* Event - triggers automatically when the timer meets deadline. Every event finalizes the action and clears busy flag.
+* Event - triggers automatically when the timer meets the deadline. Every event finalizes the action and clears the busy flag.
 
 ### Numeric function
-* `spoilage-level ?i - ingredient` - tracks the continuous degradation of and ingredient
-* `action-timer ?r - robot` - measures the elapsed time of a current task.
-* `total-cost` - metric that helps planner to find well-optimized plan.
+* `(spoilage-level ?i - ingredient)` - tracks the continuous degradation of and ingredient
+* `(action-timer ?r - robot)` - measures the elapsed time of a current task.
+* `(total-cost)` - metric that helps planner to find well-optimized plan.
 
 ### Important processes and events
 These are the most important processes in this project. They calculate how fast food loses its freshness and when it finally spoils.
-* Processes  `spoilage-fridge` and `spoilage-outside` - These processes run continuosly in the background, increasing the spoilage-lebel of each ingredient based on its location. They simulate environment, showing that food loses its freshness at a higher rate when stored outside the fridge compared to inside.
-* Event `food-spoils` - This event tracks the spoilage-level of all ingredients. Once the value exceeds the predifined limit of 10.0, the event triggers automatically to assign `not (is-fresh)`  and `not (inspected)` predicate to spoiled ingredient. This change forces the agent to identify the ingredient as expired.
+* Processes  `spoilage-fridge` and `spoilage-outside` - These processes run continuously in the background, increasing the spoilage-level of each ingredient based on its location. They simulate the environment, showing that food loses its freshness at a higher rate when stored outside the fridge compared to the inside.
+* Event `food-spoils` - This event tracks the spoilage-level of all ingredients. Once the value exceeds the predefined limit of 10.0, the event triggers automatically assign `not (is-fresh)`  and `not (inspected)` predicate to spoiled ingredients. This change forces the agent to identify the ingredients as expired.
 
 ## Problems and plans
 
 To analyze how the robot manages environmental dynamics, continuous degradation processes, and the necessity of real-time sensing, three test scenarios were created:
 
-* `problem_fully_fresh` : This scenario is a baseline that simulates and ideal environment where ingredients are initialized with a spoilage-level equal to 0. It demonstrated the robot's ability to execute its task without any immediate risks of spoilage.
+* `problem_fully_fresh` : This scenario is a baseline that simulates an ideal environment where ingredients are initialized with a spoilage-level equal to 0. It demonstrated the robot's ability to execute its task without any immediate risks of spoilage.
 * `problem_partly_fresh` : This scenario introduces a subtle initial difference in degradation levels, with the apple initialized at 2.0 and the milk at 0.0. This challenges the planner to acknowledge different "lifespans" among ingredients. It demonstrates the robot’s ability to determine an optimal task sequence that ensures time-sensitive items are processed before they reach the critical spoilage threshold.
 * `problem_almost_rotten` : This is the most complex scenario. It introduces two apples with significantly different degradation levels (8.0 and 2.0). By setting the objective to inspect all ingredients, the robot is forced to prioritize its tasks based on their spoilage-level, which demonstrates the procedure for handling and discarding spoiled food. However, it is important to note that demonstrating a "failure" through replanning is difficult because the planner actively seeks the most efficient path. It avoids at all costs choosing an order that would result in spoilage, as this would increase the total-cost. Consequently, the plan serves as proof of the planner's correctness; it integrates environmental dynamics into its decision-making to preemptively avoid degradation. 
 
@@ -295,7 +295,7 @@ In the PDDL+ model, the relationship between sensing and dynamics is essential f
 
 * The spoilage processes happen in the background, whether the robot is working or not. Because the robot does not know the exact spoilage-level of the food, it must use sensing actions (like scan-mold or smell-spoil) to check the state of the ingredients. These actions act as a "synchronization point"—they allow the robot to update its knowledge and decide whether to use an ingredient or throw it away.
 
-* The plans show that the robot doesn't just react to problems, it uses knowladge of how things change to avoid them. The robot is intelligent because it includes risk of spoilage in its planning. As we can see in the 3rd plan, the robot decided to process the fresher apple first, then discard the second one that would be rotten at the end of the task sequence. This shows that the robot understand that time is limited and that it must balance its actions to keep the total-cost as low as possible.
+* The plans show that the robot doesn't just react to problems, it uses knowledge of how things change to avoid them. The robot is intelligent because it includes the risk of spoilage in its planning. As we can see in the 3rd plan, the robot decided to process the fresher apple first, then discard the second one that would be rotten at the end of the task sequence. This shows that the robot understands that time is limited and that it must balance its actions to keep the total-cost as low as possible.
 
 ### Limitations of deterministic planning
 A major limitation in both models is that PDDL solvers are deterministic. This means the planner has "God-like" knowledge of the environment from the very start, including the exact spoilage-level and freshness of every item. Even though the robot must perform inspection actions to follow the rules, the planner already knows the results before the robot even moves. In a real-world situation, this information would be hidden from the robot until it actually inspects the food. Our current model simulates the need for sensing by making inspection a required step, using this "discovery" pattern to mimic real-world partial knowledge within a system that technically knows everything from the beginning.
