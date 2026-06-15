@@ -25,9 +25,6 @@
         (trash-zone trash)
         (table-zone table)
         
-        ;; Ustawiamy spoilage-level blisko granicy (10.0), 
-        ;; żeby podczas wykonywania akcji (np. przenoszenia) 
-        ;; proces spoilage przekroczył 10.0
         (= (spoilage-level apple2) 8.0)
         (= (spoilage-level apple1) 2.0) 
         (= (spoilage-level milk) 0.0)
